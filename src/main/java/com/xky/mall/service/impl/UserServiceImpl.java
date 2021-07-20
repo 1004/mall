@@ -5,6 +5,7 @@ import com.xky.mall.exception.MallExceptionEnum;
 import com.xky.mall.model.dao.UserMapper;
 import com.xky.mall.model.pojo.User;
 import com.xky.mall.service.UserService;
+import com.xky.mall.utils.Md5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +39,7 @@ public class UserServiceImpl implements UserService {
         }
         User newUser = new User();
         newUser.setUsername(userName);
-        newUser.setPassword(password);
+        newUser.setPassword(Md5Util.md5(password));
         int count = userMapper.insertSelective(newUser);
         if (count == 0) {
             throw new MallException(MallExceptionEnum.USER_REGIST_FAILED);
