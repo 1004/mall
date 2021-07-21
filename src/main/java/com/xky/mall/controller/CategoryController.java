@@ -7,6 +7,9 @@ import com.xky.mall.model.pojo.User;
 import com.xky.mall.model.request.AddCategoryReq;
 import com.xky.mall.service.CategoryService;
 import com.xky.mall.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,8 +42,9 @@ public class CategoryController {
      * @param session
      * @return
      */
+    @ApiOperation("后台添加目录")
     @PostMapping("/admin/add")
-    public CommonResponse<Object> addCatetory(@Valid @RequestBody AddCategoryReq category, HttpSession session) {
+    public CommonResponse<Object> addCatetory(@ApiParam("数据") @Valid @RequestBody AddCategoryReq category, HttpSession session) {
         //登录逻辑校验
         User user = (User) session.getAttribute(Constants.USER_LOGIN_CACHE_KEY);
         if (user == null) {
