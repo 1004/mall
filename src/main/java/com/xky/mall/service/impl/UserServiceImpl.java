@@ -45,4 +45,43 @@ public class UserServiceImpl implements UserService {
             throw new MallException(MallExceptionEnum.USER_REGIST_FAILED);
         }
     }
+
+    /**
+     * 普通用户登录
+     * @param userName
+     * @param password
+     * @return
+     * @throws MallException
+     */
+    @Override
+    public User login(String userName,String password) throws MallException {
+        //针对密码的碰撞
+        User user = userMapper.selectUserByLogin(userName, Md5Util.md5(password));
+        if (user == null){
+            throw new MallException(MallExceptionEnum.USER_LOGIN_PWD);
+        }
+        return user;
+    }
+
+    /**
+     * 更新签名
+     * @param user
+     */
+    @Override
+    public void updataSig(User user) throws MallException {
+        int count = userMapper.updateByPrimaryKeySelective(user);
+        if(count>1){
+            throw new MallException(MallExceptionEnum.USER_UPDATA_SIG_F);
+        }
+    }
+
+    /**
+     * 用户角色
+     * @param user
+     * @return
+     */
+    @Override
+    public boolean checkAdminRole(User user){
+        return user != null && user.getRole()==2;
+    }
 }

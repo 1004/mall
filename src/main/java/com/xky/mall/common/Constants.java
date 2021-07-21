@@ -7,4 +7,8 @@ package com.xky.mall.common;
  */
 public class Constants {
     public static final String SALT = "sdlkf#@]]12";
+    /**
+     * 登录缓存key
+     */
+    public static final String USER_LOGIN_CACHE_KEY = "user_login_cache_key";
 }

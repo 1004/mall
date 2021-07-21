@@ -12,4 +12,10 @@ public interface UserService {
      * @param password
      */
     void regist(String userName, String password) throws MallException;
+
+    User login(String userName, String password) throws MallException;
+
+    void updataSig(User user) throws MallException;
+
+    boolean checkAdminRole(User user);
 }

@@ -7,6 +7,12 @@ public enum MallExceptionEnum {
     USER_NEED_PWD(1003, "密码不能为空"),
     USER_PWD_LENGTH(1004, "密码最少8位"),
 
+    USER_LOGIN_PWD(1005, "用户名或者密码不正确"),
+    USER_LOGIN_NEED(1006, "用户未登录"),
+    USER_UPDATA_SIG_F(1007, "更新签名失败"),
+
+    USER_ADMIN_LOGIN_F(1008, "管理员登录失败"),
+
     SYSTEM_ERROR(10000, "系统异常");
 
     private int code;

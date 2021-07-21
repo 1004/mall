@@ -1,7 +1,10 @@
 package com.xky.mall.model.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.Date;
 
+@JsonIgnoreProperties(value = {"password","role"})
 public class User {
     private Integer id;
 

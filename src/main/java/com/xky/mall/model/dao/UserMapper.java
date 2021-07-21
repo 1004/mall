@@ -1,6 +1,7 @@
 package com.xky.mall.model.dao;
 
 import com.xky.mall.model.pojo.User;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -18,5 +19,7 @@ public interface UserMapper {
     int updateByPrimaryKey(User record);
 
     User selectUserByName(String userName);
+
+    User selectUserByLogin(@Param("userName") String userName, @Param("password") String password);
 
 }

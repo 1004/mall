@@ -1,6 +1,7 @@
 package com.xky.mall.controller;
 
 import com.xky.mall.common.CommonResponse;
+import com.xky.mall.common.Constants;
 import com.xky.mall.exception.MallException;
 import com.xky.mall.exception.MallExceptionEnum;
 import com.xky.mall.model.pojo.User;
@@ -8,6 +9,9 @@ import com.xky.mall.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * @author xiekongying
@@ -21,7 +25,8 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/select")
-    public User selectUser(@RequestParam("id") int id) {
+    public User selectUser(@RequestParam("id") int id, HttpServletRequest request) {
+//        request.getSession()
         return userService.selectByPrimaryKey(id);
     }
 
@@ -45,5 +50,83 @@ public class UserController {
         }
         userService.regist(userName, password);
         return CommonResponse.success();
+    }
+
+    /**
+     * 普通用户登录
+     *
+     * @param userName
+     * @param password
+     * @return
+     */
+    @PostMapping("/login")
+    public CommonResponse<User> login(@RequestParam("userName") String userName, @RequestParam("password") String password, HttpSession session) throws MallException {
+        if (StringUtils.isEmpty(userName)) {
+            return CommonResponse.error(MallExceptionEnum.USER_NEED_NAME);
+        }
+        if (StringUtils.isEmpty(password)) {
+            return CommonResponse.error(MallExceptionEnum.USER_NEED_PWD);
+        }
+
+        User user = userService.login(userName, password);
+        //登录成功后，对用户信息进行保存
+        session.setAttribute(Constants.USER_LOGIN_CACHE_KEY, user);
+        return CommonResponse.success(user);
+    }
+
+    /**
+     * 更新签名
+     *
+     * @param sig
+     * @param session
+     * @return
+     */
+    @PostMapping("/updataSig")
+    public CommonResponse<Object> updataSig(String sig, HttpSession session) throws MallException {
+        Object attribute = session.getAttribute(Constants.USER_LOGIN_CACHE_KEY);
+        if (attribute == null || !(attribute instanceof User)) {
+            return CommonResponse.error(MallExceptionEnum.USER_LOGIN_NEED);
+        }
+        User currentUser = (User) attribute;
+        User user = new User();
+        user.setPersonalizedSignature(sig);
+        user.setId(currentUser.getId());
+        userService.updataSig(user);
+        return CommonResponse.success();
+    }
+
+    /**
+     * 退出登录
+     *
+     * @return
+     */
+    @GetMapping("/logout")
+    public CommonResponse<Object> logout(HttpSession session) {
+        session.removeAttribute(Constants.USER_LOGIN_CACHE_KEY);
+        return CommonResponse.success();
+    }
+
+    /**
+     * 管理员登录
+     *
+     * @param userName
+     * @param password
+     * @return
+     */
+    @PostMapping("/admin/login")
+    public CommonResponse<User> Adminlogin(@RequestParam("userName") String userName, @RequestParam("password") String password, HttpSession session) throws MallException {
+        if (StringUtils.isEmpty(userName)) {
+            return CommonResponse.error(MallExceptionEnum.USER_NEED_NAME);
+        }
+        if (StringUtils.isEmpty(password)) {
+            return CommonResponse.error(MallExceptionEnum.USER_NEED_PWD);
+        }
+        User user = userService.login(userName, password);
+        if (userService.checkAdminRole(user)) {
+            //登录成功后，对用户信息进行保存
+            session.setAttribute(Constants.USER_LOGIN_CACHE_KEY, user);
+            return CommonResponse.success(user);
+        }
+        return CommonResponse.error(MallExceptionEnum.USER_ADMIN_LOGIN_F);
     }
 }
