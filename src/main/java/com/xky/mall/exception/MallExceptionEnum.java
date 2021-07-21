@@ -13,7 +13,12 @@ public enum MallExceptionEnum {
 
     USER_ADMIN_LOGIN_F(1008, "管理员登录失败"),
 
-    SYSTEM_ERROR(10000, "系统异常");
+    CATEGORY_NAME_REPEAT(1009, "分类名称重名"),
+    CATEGORY_ADD_F(1010, "分类添加失败"),
+
+
+    SYSTEM_ERROR(10000, "系统异常"),
+    SYSTEM_PARAM_EXCEPTION(10001, "参数异常");
 
     private int code;
     private String msg;

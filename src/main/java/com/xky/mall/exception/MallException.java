@@ -6,7 +6,7 @@ package com.xky.mall.exception;
  * @date 2021/7/20 5:42 下午
  * 通用异常
  */
-public class MallException extends Exception {
+public class MallException extends RuntimeException {
     private int code;
     private String msg;
 
