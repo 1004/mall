@@ -13,10 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -79,6 +76,12 @@ public class CategoryController {
         } else {
             return CommonResponse.error(MallExceptionEnum.USER_LOGIN_NEED);
         }
+        return CommonResponse.success();
+    }
+
+    @ApiOperation("后台删除分类")
+    @GetMapping("/admin/delete")
+    public CommonResponse<Object> deleteCategory(Integer id) {
         return CommonResponse.success();
     }
 
