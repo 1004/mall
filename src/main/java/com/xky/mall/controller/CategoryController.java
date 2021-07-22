@@ -3,13 +3,15 @@ package com.xky.mall.controller;
 import com.xky.mall.common.CommonResponse;
 import com.xky.mall.common.Constants;
 import com.xky.mall.exception.MallExceptionEnum;
+import com.xky.mall.model.pojo.Category;
 import com.xky.mall.model.pojo.User;
 import com.xky.mall.model.request.AddCategoryReq;
+import com.xky.mall.model.request.UpdataCategoryReq;
 import com.xky.mall.service.CategoryService;
 import com.xky.mall.service.UserService;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -54,6 +56,26 @@ public class CategoryController {
         if (userService.checkAdminRole(user)) {
             // 然后进行插入
             categoryService.addCategory(category);
+        } else {
+            return CommonResponse.error(MallExceptionEnum.USER_LOGIN_NEED);
+        }
+        return CommonResponse.success();
+    }
+
+    @ApiOperation("后台修改目录")
+    @PostMapping("/admin/updata")
+    public CommonResponse<Object> updataCategory(@Valid @RequestBody UpdataCategoryReq categoryReq, HttpSession session) {
+        //登录逻辑校验
+        User user = (User) session.getAttribute(Constants.USER_LOGIN_CACHE_KEY);
+        if (user == null) {
+            return CommonResponse.error(MallExceptionEnum.USER_LOGIN_NEED);
+        }
+        //用户角色登录
+        if (userService.checkAdminRole(user)) {
+            // 然后进行插入
+            Category category = new Category();
+            BeanUtils.copyProperties(categoryReq, category);
+            categoryService.updataCategory(category);
         } else {
             return CommonResponse.error(MallExceptionEnum.USER_LOGIN_NEED);
         }
