@@ -16,6 +16,8 @@ public enum MallExceptionEnum {
     CATEGORY_NAME_REPEAT(1009, "分类名称重名"),
     CATEGORY_ADD_F(1010, "分类添加失败"),
     CATEGORY_UPDATA_F(1011, "分类更新失败"),
+    CATEGORY_DELETE_NOT_EXIST(1012, "删除分类失败-不存在分类"),
+    CATEGORY_DELETE_F(1013, "删除分类失败"),
 
 
     SYSTEM_ERROR(10000, "系统异常"),

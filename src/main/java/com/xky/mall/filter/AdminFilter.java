@@ -29,7 +29,6 @@ public class AdminFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpSession session = ((HttpServletRequest) servletRequest).getSession();
         //登录逻辑校验
         User user = (User) session.getAttribute(Constants.USER_LOGIN_CACHE_KEY);
@@ -47,6 +46,7 @@ public class AdminFilter implements Filter {
             writer.close();
             return;
         }
+        filterChain.doFilter(servletRequest,servletResponse);
     }
 
     @Override

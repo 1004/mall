@@ -1,5 +1,6 @@
 package com.xky.mall.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.xky.mall.common.CommonResponse;
 import com.xky.mall.common.Constants;
 import com.xky.mall.exception.MallExceptionEnum;
@@ -82,7 +83,15 @@ public class CategoryController {
     @ApiOperation("后台删除分类")
     @GetMapping("/admin/delete")
     public CommonResponse<Object> deleteCategory(Integer id) {
+        categoryService.deleteCategory(id);
         return CommonResponse.success();
+    }
+
+    @ApiOperation("后台查询分类")
+    @GetMapping("/admin/query")
+    public CommonResponse<Object> adminQuery(@RequestParam Integer page,@RequestParam Integer pageSize){
+        PageInfo<Category> pageInfo = categoryService.queryCategoryByAdmin(page, pageSize);
+        return CommonResponse.success(pageInfo);
     }
 
 }

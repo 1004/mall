@@ -1,5 +1,7 @@
 package com.xky.mall.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.xky.mall.exception.MallException;
 import com.xky.mall.exception.MallExceptionEnum;
 import com.xky.mall.model.dao.CategoryMapper;
@@ -10,6 +12,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
 
 /**
  * @author xiekongying
@@ -57,4 +61,36 @@ public class CategoryServiceImpl implements CategoryService {
             throw new MallException(MallExceptionEnum.CATEGORY_UPDATA_F);
         }
     }
+
+    /**
+     * 删除分类
+     *
+     * @param id
+     */
+    @Override
+    public void deleteCategory(Integer id) {
+        Category oldCategory = categoryMapper.selectByPrimaryKey(id);
+        if (oldCategory == null) {
+            throw new MallException(MallExceptionEnum.CATEGORY_DELETE_NOT_EXIST);
+        }
+        int count = categoryMapper.deleteByPrimaryKey(id);
+        if (count == 0) {
+            throw new MallException(MallExceptionEnum.CATEGORY_DELETE_F);
+        }
+    }
+
+
+    /**
+     * 管理员平铺查询分类
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public PageInfo<Category> queryCategoryByAdmin(Integer page, Integer pageSize) {
+        PageHelper.startPage(page, pageSize, "type,order_num");
+        List<Category> categories = categoryMapper.selectList();
+        return PageInfo.of(categories);
+    }
+
 }
