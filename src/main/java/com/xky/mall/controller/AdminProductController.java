@@ -1,0 +1,92 @@
+package com.xky.mall.controller;
+
+import com.xky.mall.common.CommonResponse;
+import com.xky.mall.common.Constants;
+import com.xky.mall.exception.MallExceptionEnum;
+import com.xky.mall.model.request.AddProductReq;
+import com.xky.mall.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.UUID;
+
+/**
+ * @author xiekongying
+ * @version 1.0
+ * @date 2021/7/22 7:20 下午
+ * @Desc 后台商品
+ */
+@RestController
+@RequestMapping("/admin/product")
+public class AdminProductController {
+    @Autowired
+    private ProductService productService;
+
+    /**
+     * 添加商品
+     *
+     * @param productReq
+     * @return
+     */
+    @PostMapping("/add")
+    public CommonResponse addProduct(@Valid @RequestBody AddProductReq productReq) {
+        productService.addProduct(productReq);
+        return CommonResponse.success();
+    }
+
+
+    /**
+     * 图片上传
+     * @param request
+     * @param file
+     * @return
+     */
+    @PostMapping("/upload")
+    public CommonResponse upload(HttpServletRequest request, @RequestParam("file") MultipartFile file){
+        String originalFilename = file.getOriginalFilename();
+        String suffixName = originalFilename.substring(originalFilename.lastIndexOf("."));
+        UUID uuid = UUID.randomUUID();
+        String newFileName = uuid.toString()+suffixName;
+        //创建文件
+        File fileDir = new File(Constants.FILE_UPLOAD_DIR);
+        if (!fileDir.exists()){
+            if (!fileDir.mkdir()){
+                //创建目录失败
+                return CommonResponse.error(MallExceptionEnum.SYSTEM_UPLOAD_F);
+            }
+        }
+        File destFile = new File(Constants.FILE_UPLOAD_DIR+newFileName);
+        try {
+            file.transferTo(destFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return CommonResponse.error(MallExceptionEnum.SYSTEM_UPLOAD_F);
+        }
+        //地址传出去
+        try {
+            return CommonResponse.success(getHost(new URI(request.getRequestURL()+""))+"/image/"+newFileName);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return CommonResponse.error(MallExceptionEnum.SYSTEM_UPLOAD_F);
+    }
+
+    private URI getHost(URI uri){
+        URI effectiveURI;
+        try {
+            effectiveURI = new URI(uri.getScheme(),uri.getUserInfo(),uri.getHost(),uri.getPort(),null,null,null);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            effectiveURI = null;
+        }
+        return effectiveURI;
+    }
+
+}

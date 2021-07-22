@@ -6,11 +6,9 @@ public enum MallExceptionEnum {
     USER_REGIST_FAILED(1002,"用户注册失败"),
     USER_NEED_PWD(1003, "密码不能为空"),
     USER_PWD_LENGTH(1004, "密码最少8位"),
-
     USER_LOGIN_PWD(1005, "用户名或者密码不正确"),
     USER_LOGIN_NEED(1006, "用户未登录"),
     USER_UPDATA_SIG_F(1007, "更新签名失败"),
-
     USER_ADMIN_LOGIN_F(1008, "管理员登录失败"),
 
     CATEGORY_NAME_REPEAT(1009, "分类名称重名"),
@@ -20,7 +18,12 @@ public enum MallExceptionEnum {
     CATEGORY_DELETE_F(1013, "删除分类失败"),
 
 
+    PRODUCT_NAME_REPEAT(1014, "商品名字重复"),
+    PRODUCT_ADD_F(1015, "用户插入失败"),
+
+
     SYSTEM_ERROR(10000, "系统异常"),
+    SYSTEM_UPLOAD_F(10002, "图片上传失败"),
     SYSTEM_PARAM_EXCEPTION(10001, "参数异常");
 
     private int code;
