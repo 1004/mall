@@ -1,5 +1,6 @@
 package com.xky.mall.model.vo;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class CategoryVo {
 
     private Date updateTime;
 
-    private List<CategoryVo> childCategory;
+    private List<CategoryVo> childCategory = new ArrayList<>();
 
     public List<CategoryVo> getChildCategory() {
         return childCategory;

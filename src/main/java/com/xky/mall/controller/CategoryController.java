@@ -8,6 +8,7 @@ import com.xky.mall.model.pojo.Category;
 import com.xky.mall.model.pojo.User;
 import com.xky.mall.model.request.AddCategoryReq;
 import com.xky.mall.model.request.UpdataCategoryReq;
+import com.xky.mall.model.vo.CategoryVo;
 import com.xky.mall.service.CategoryService;
 import com.xky.mall.service.UserService;
 import io.swagger.annotations.ApiOperation;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author xiekongying
@@ -89,9 +91,16 @@ public class CategoryController {
 
     @ApiOperation("后台查询分类")
     @GetMapping("/admin/query")
-    public CommonResponse<Object> adminQuery(@RequestParam Integer page,@RequestParam Integer pageSize){
+    public CommonResponse<Object> adminQuery(@RequestParam Integer page, @RequestParam Integer pageSize) {
         PageInfo<Category> pageInfo = categoryService.queryCategoryByAdmin(page, pageSize);
         return CommonResponse.success(pageInfo);
+    }
+
+
+    @GetMapping("/query")
+    public CommonResponse customerQuery() {
+        List<CategoryVo> categoryVos = categoryService.queryCategoryByCustomer();
+        return CommonResponse.success(categoryVos);
     }
 
 }

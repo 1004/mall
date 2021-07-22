@@ -7,12 +7,15 @@ import com.xky.mall.exception.MallExceptionEnum;
 import com.xky.mall.model.dao.CategoryMapper;
 import com.xky.mall.model.pojo.Category;
 import com.xky.mall.model.request.AddCategoryReq;
+import com.xky.mall.model.vo.CategoryVo;
 import com.xky.mall.service.CategoryService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -82,6 +85,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * 管理员平铺查询分类
+     *
      * @param page
      * @param pageSize
      * @return
@@ -91,6 +95,26 @@ public class CategoryServiceImpl implements CategoryService {
         PageHelper.startPage(page, pageSize, "type,order_num");
         List<Category> categories = categoryMapper.selectList();
         return PageInfo.of(categories);
+    }
+
+    @Override
+    public List<CategoryVo> queryCategoryByCustomer() {
+        List<CategoryVo> temp = new ArrayList<>();
+        recursiveFindCategories(temp,0);
+        return temp;
+    }
+
+    private void recursiveFindCategories(List<CategoryVo> categoryVos, Integer parentId) {
+        List<Category> categories = categoryMapper.selectListByParentId(parentId);
+        if (!CollectionUtils.isEmpty(categories)) {
+            for (int i=0 ;i<categories.size();i++){
+                Category category = categories.get(i);
+                CategoryVo categoryVo = new CategoryVo();
+                BeanUtils.copyProperties(category,categoryVo);
+                categoryVos.add(categoryVo);
+                recursiveFindCategories(categoryVo.getChildCategory(),category.getId());
+            }
+        }
     }
 
 }
