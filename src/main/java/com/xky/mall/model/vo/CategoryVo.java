@@ -1,10 +1,11 @@
 package com.xky.mall.model.vo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class CategoryVo {
+public class CategoryVo implements Serializable {
     private Integer id;
 
     private String name;
