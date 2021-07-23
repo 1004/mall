@@ -114,4 +114,11 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectByUserIdAndProId" parameterType="map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"></include>
+    from imooc_mall_cart
+    where product_id=#{productId}
+    and user_id = #{userId}
+  </select>
 </mapper>
