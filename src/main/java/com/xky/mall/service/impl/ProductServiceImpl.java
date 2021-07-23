@@ -1,5 +1,7 @@
 package com.xky.mall.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.xky.mall.exception.MallException;
 import com.xky.mall.exception.MallExceptionEnum;
 import com.xky.mall.model.dao.ProductMapper;
@@ -11,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 /**
  * @author xiekongying
@@ -65,5 +69,18 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void batchUpdateSellStatus(Integer[] ids, Integer sellStatus){
         productMapper.batchUpdateSellStatus(ids,sellStatus);
+    }
+
+    @Override
+    public PageInfo listForAdmin(Integer page, Integer pageSize){
+        PageHelper.startPage(page,pageSize);
+        List<Product> products = productMapper.listForAdmin();
+        return PageInfo.of(products);
+    }
+
+    @Override
+    public Product selectDetail(Integer id){
+        Product product = productMapper.selectByPrimaryKey(id);
+        return product;
     }
 }

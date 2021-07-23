@@ -7,6 +7,7 @@ import com.xky.mall.model.pojo.Product;
 import com.xky.mall.model.request.AddProductReq;
 import com.xky.mall.model.request.UpdateProductReq;
 import com.xky.mall.service.ProductService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,8 +120,16 @@ public class AdminProductController {
     @ApiOperation("批量上下架商品")
     @GetMapping("/batchUpdateSellStatus")
     public CommonResponse batchUpdateSellStatus(@RequestParam Integer[] ids, @RequestParam Integer sellStatus) {
-        productService.batchUpdateSellStatus(ids,sellStatus);
+        productService.batchUpdateSellStatus(ids, sellStatus);
         return CommonResponse.success();
     }
+
+
+    @ApiOperation("后台商品查询")
+    @GetMapping("/select")
+    public CommonResponse queryProduct(@RequestParam Integer page, @RequestParam Integer pageSize) {
+        return CommonResponse.success(productService.listForAdmin(page, pageSize));
+    }
+
 
 }
