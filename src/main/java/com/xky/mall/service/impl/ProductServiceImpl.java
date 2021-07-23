@@ -9,6 +9,7 @@ import com.xky.mall.service.ProductService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 /**
  * @author xiekongying
@@ -23,14 +24,40 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void addProduct(AddProductReq productReq) {
         Product oldProduct = productMapper.selectByName(productReq.getName());
-        if (oldProduct != null){
+        if (oldProduct != null) {
             throw new MallException(MallExceptionEnum.PRODUCT_NAME_REPEAT);
         }
         Product product = new Product();
-        BeanUtils.copyProperties(productReq,product);
+        BeanUtils.copyProperties(productReq, product);
         int count = productMapper.insertSelective(product);
-        if (count == 0){
+        if (count == 0) {
             throw new MallException(MallExceptionEnum.PRODUCT_ADD_F);
+        }
+    }
+
+    @Override
+    public void updateProduct(Product product) {
+        if (StringUtils.hasLength(product.getName())) {
+            Product oldProduct = productMapper.selectByName(product.getName());
+            if (oldProduct != null && !oldProduct.getId().equals(product.getId())) {
+                throw new MallException(MallExceptionEnum.PRODUCT_NAME_REPEAT);
+            }
+        }
+        int count = productMapper.updateByPrimaryKeySelective(product);
+        if (count == 0) {
+            throw new MallException(MallExceptionEnum.PRODUCT_UPDATE_F);
+        }
+    }
+
+    @Override
+    public void deleteProduct(Integer id){
+        Product product = productMapper.selectByPrimaryKey(id);
+        if (product == null){
+            throw new MallException(MallExceptionEnum.PRODUCT_NOT_EXIST);
+        }
+        int count = productMapper.deleteByPrimaryKey(id);
+        if (count == 0){
+            throw new MallException(MallExceptionEnum.PRODUCT_DELETE_F);
         }
     }
 }

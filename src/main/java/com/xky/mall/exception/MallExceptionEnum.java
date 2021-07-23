@@ -19,7 +19,10 @@ public enum MallExceptionEnum {
 
 
     PRODUCT_NAME_REPEAT(1014, "商品名字重复"),
-    PRODUCT_ADD_F(1015, "用户插入失败"),
+    PRODUCT_ADD_F(1015, "商品新增失败"),
+    PRODUCT_UPDATE_F(1016, "修改商品失败"),
+    PRODUCT_NOT_EXIST(1017, "商品不存在"),
+    PRODUCT_DELETE_F(1018, "商品删除失败"),
 
 
     SYSTEM_ERROR(10000, "系统异常"),

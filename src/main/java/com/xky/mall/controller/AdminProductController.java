@@ -3,8 +3,12 @@ package com.xky.mall.controller;
 import com.xky.mall.common.CommonResponse;
 import com.xky.mall.common.Constants;
 import com.xky.mall.exception.MallExceptionEnum;
+import com.xky.mall.model.pojo.Product;
 import com.xky.mall.model.request.AddProductReq;
+import com.xky.mall.model.request.UpdateProductReq;
 import com.xky.mall.service.ProductService;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,25 +48,26 @@ public class AdminProductController {
 
     /**
      * 图片上传
+     *
      * @param request
      * @param file
      * @return
      */
     @PostMapping("/upload")
-    public CommonResponse upload(HttpServletRequest request, @RequestParam("file") MultipartFile file){
+    public CommonResponse upload(HttpServletRequest request, @RequestParam("file") MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
         String suffixName = originalFilename.substring(originalFilename.lastIndexOf("."));
         UUID uuid = UUID.randomUUID();
-        String newFileName = uuid.toString()+suffixName;
+        String newFileName = uuid.toString() + suffixName;
         //创建文件
         File fileDir = new File(Constants.FILE_UPLOAD_DIR);
-        if (!fileDir.exists()){
-            if (!fileDir.mkdir()){
+        if (!fileDir.exists()) {
+            if (!fileDir.mkdir()) {
                 //创建目录失败
                 return CommonResponse.error(MallExceptionEnum.SYSTEM_UPLOAD_F);
             }
         }
-        File destFile = new File(Constants.FILE_UPLOAD_DIR+newFileName);
+        File destFile = new File(Constants.FILE_UPLOAD_DIR + newFileName);
         try {
             file.transferTo(destFile);
         } catch (IOException e) {
@@ -71,22 +76,44 @@ public class AdminProductController {
         }
         //地址传出去
         try {
-            return CommonResponse.success(getHost(new URI(request.getRequestURL()+""))+"/image/"+newFileName);
+            return CommonResponse.success(getHost(new URI(request.getRequestURL() + "")) + "/image/" + newFileName);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
         return CommonResponse.error(MallExceptionEnum.SYSTEM_UPLOAD_F);
     }
 
-    private URI getHost(URI uri){
+    private URI getHost(URI uri) {
         URI effectiveURI;
         try {
-            effectiveURI = new URI(uri.getScheme(),uri.getUserInfo(),uri.getHost(),uri.getPort(),null,null,null);
+            effectiveURI = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), null, null, null);
         } catch (URISyntaxException e) {
             e.printStackTrace();
             effectiveURI = null;
         }
         return effectiveURI;
+    }
+
+    /**
+     * 修改商品
+     *
+     * @param productReq
+     * @return
+     */
+    @ApiOperation("修改商品")
+    @PostMapping("/update")
+    public CommonResponse updateProduct(@Valid @RequestBody UpdateProductReq productReq) {
+        Product product = new Product();
+        BeanUtils.copyProperties(productReq, product);
+        productService.updateProduct(product);
+        return CommonResponse.success();
+    }
+
+    @ApiOperation("删除商品")
+    @GetMapping("/delete")
+    public CommonResponse deleteProduct(@RequestParam Integer id) {
+        productService.deleteProduct(id);
+        return CommonResponse.success();
     }
 
 }
