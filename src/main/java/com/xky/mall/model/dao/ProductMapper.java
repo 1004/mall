@@ -1,6 +1,7 @@
 package com.xky.mall.model.dao;
 
 import com.xky.mall.model.pojo.Product;
+import com.xky.mall.model.query.ProductListQuery;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -25,4 +26,7 @@ public interface ProductMapper {
     void batchUpdateSellStatus(@Param("ids") Integer[] ids, @Param("sellStatus") Integer sellStatus);
 
     List<Product> listForAdmin();
+
+    List<Product> selectList(@Param("query") ProductListQuery query);
+
 }

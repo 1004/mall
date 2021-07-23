@@ -1,7 +1,10 @@
 package com.xky.mall.common;
 
+import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.util.Set;
 
 /**
  * @author xiekongying
@@ -24,5 +27,9 @@ public class Constants {
     @Value("${file.upload.dir}")
     public void setUploadFileDir(String uploadFileDir) {
         FILE_UPLOAD_DIR = uploadFileDir;
+    }
+
+    public interface ProductListOrderBy{
+        Set<String> PRICE_ASC_DESC = Sets.newHashSet("price desc","price asc");
     }
 }

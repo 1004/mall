@@ -3,6 +3,7 @@ package com.xky.mall.service;
 import com.github.pagehelper.PageInfo;
 import com.xky.mall.model.pojo.Product;
 import com.xky.mall.model.request.AddProductReq;
+import com.xky.mall.model.request.SelectProductReq;
 
 public interface ProductService {
     void addProduct(AddProductReq productReq);
@@ -16,4 +17,6 @@ public interface ProductService {
     PageInfo listForAdmin(Integer page, Integer pageSize);
 
     Product selectDetail(Integer id);
+
+    PageInfo listProduct(SelectProductReq productReq);
 }

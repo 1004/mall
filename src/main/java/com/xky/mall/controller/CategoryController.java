@@ -99,7 +99,7 @@ public class CategoryController {
 
     @GetMapping("/query")
     public CommonResponse customerQuery() {
-        List<CategoryVo> categoryVos = categoryService.queryCategoryByCustomer();
+        List<CategoryVo> categoryVos = categoryService.queryCategoryByCustomer(0);
         return CommonResponse.success(categoryVos);
     }
 

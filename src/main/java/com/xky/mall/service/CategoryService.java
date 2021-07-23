@@ -16,5 +16,5 @@ public interface CategoryService {
 
     PageInfo<Category> queryCategoryByAdmin(Integer page, Integer pageSize);
 
-    List<CategoryVo> queryCategoryByCustomer();
+    List<CategoryVo> queryCategoryByCustomer(Integer parentId);
 }

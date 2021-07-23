@@ -2,18 +2,25 @@ package com.xky.mall.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.xky.mall.common.Constants;
 import com.xky.mall.exception.MallException;
 import com.xky.mall.exception.MallExceptionEnum;
 import com.xky.mall.model.dao.ProductMapper;
 import com.xky.mall.model.pojo.Product;
+import com.xky.mall.model.query.ProductListQuery;
 import com.xky.mall.model.request.AddProductReq;
+import com.xky.mall.model.request.SelectProductReq;
+import com.xky.mall.model.vo.CategoryVo;
+import com.xky.mall.service.CategoryService;
 import com.xky.mall.service.ProductService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,6 +32,9 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductMapper productMapper;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @Override
     public void addProduct(AddProductReq productReq) {
@@ -55,32 +65,79 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProduct(Integer id){
+    public void deleteProduct(Integer id) {
         Product product = productMapper.selectByPrimaryKey(id);
-        if (product == null){
+        if (product == null) {
             throw new MallException(MallExceptionEnum.PRODUCT_NOT_EXIST);
         }
         int count = productMapper.deleteByPrimaryKey(id);
-        if (count == 0){
+        if (count == 0) {
             throw new MallException(MallExceptionEnum.PRODUCT_DELETE_F);
         }
     }
 
     @Override
-    public void batchUpdateSellStatus(Integer[] ids, Integer sellStatus){
-        productMapper.batchUpdateSellStatus(ids,sellStatus);
+    public void batchUpdateSellStatus(Integer[] ids, Integer sellStatus) {
+        productMapper.batchUpdateSellStatus(ids, sellStatus);
     }
 
     @Override
-    public PageInfo listForAdmin(Integer page, Integer pageSize){
-        PageHelper.startPage(page,pageSize);
+    public PageInfo listForAdmin(Integer page, Integer pageSize) {
+        PageHelper.startPage(page, pageSize);
         List<Product> products = productMapper.listForAdmin();
         return PageInfo.of(products);
     }
 
     @Override
-    public Product selectDetail(Integer id){
+    public Product selectDetail(Integer id) {
         Product product = productMapper.selectByPrimaryKey(id);
         return product;
     }
+
+    /**
+     * 前台查询
+     *
+     * @param productReq
+     * @return
+     */
+    @Override
+    public PageInfo listProduct(SelectProductReq productReq) {
+        ProductListQuery listQuery = new ProductListQuery();
+        //搜索
+        if (StringUtils.hasLength(productReq.getKeyword())) {
+            String k = new StringBuffer().append("%").append(productReq.getKeyword()).append("%").toString();
+            listQuery.setKeyword(k);
+        }
+        //子分类平铺
+        if (productReq.getCategoryId() != null) {
+            List<Integer> allChildCategoryIds = new ArrayList<>();
+            allChildCategoryIds.add(productReq.getCategoryId());
+            //先查询category所有的子分类id
+            List<CategoryVo> categoryVos = categoryService.queryCategoryByCustomer(productReq.getCategoryId());
+            fullChildCategoryId(allChildCategoryIds, categoryVos);
+            listQuery.setCategoryIds(allChildCategoryIds);
+        }
+        //排序
+        if (Constants.ProductListOrderBy.PRICE_ASC_DESC.contains(productReq.getOrderBy())) {
+            PageHelper.startPage(productReq.getPage(), productReq.getPageSize(), productReq.getOrderBy());
+        } else {
+            PageHelper.startPage(productReq.getPage(), productReq.getPageSize());
+        }
+        List<Product> products = productMapper.selectList(listQuery);
+        return PageInfo.of(products);
+    }
+
+    private void fullChildCategoryId(List<Integer> container, List<CategoryVo> categoryVos) {
+        if (!CollectionUtils.isEmpty(categoryVos)) {
+            for (int i = 0; i < categoryVos.size(); i++) {
+                CategoryVo categoryVo = categoryVos.get(i);
+                if (categoryVo != null) {
+                    container.add(categoryVo.getId());
+                    fullChildCategoryId(container, categoryVo.getChildCategory());
+                }
+            }
+        }
+    }
+
+
 }
