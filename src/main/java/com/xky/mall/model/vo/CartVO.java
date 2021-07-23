@@ -22,7 +22,38 @@ public class CartVO {
 
     private Date updateTime;
 
+
+    private String productName;
+
+    private String productImage;
+
+    private Integer productPrice;
+
     private Integer totalPrice;
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public String getProductImage() {
+        return productImage;
+    }
+
+    public void setProductImage(String productImage) {
+        this.productImage = productImage;
+    }
+
+    public Integer getProductPrice() {
+        return productPrice;
+    }
+
+    public void setProductPrice(Integer productPrice) {
+        this.productPrice = productPrice;
+    }
 
     public Integer getId() {
         return id;

@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface CartService {
     List<CartVO> add(Integer productId, Integer count);
+
+    List<CartVO> list();
 }

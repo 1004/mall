@@ -55,7 +55,7 @@ public class CartServiceImpl implements CartService {
             updateCart.setUserId(user.getId());
             cartMapper.updateByPrimaryKeySelective(updateCart);
         }
-        return null;
+        return list();
     }
 
     /**
@@ -76,5 +76,20 @@ public class CartServiceImpl implements CartService {
         if (product.getStock() < count) {
             throw new MallException(MallExceptionEnum.CART_PRO_NO_ENOUGH);
         }
+    }
+
+    /**
+     * 查询
+     *
+     * @return
+     */
+    @Override
+    public List<CartVO> list() {
+        List<CartVO> cartVOS = cartMapper.selectList(UserFilter.currentUser.getId());
+        for (int i=0 ;i<cartVOS.size() ;i++){
+            CartVO cartVO = cartVOS.get(i);
+            cartVO.setTotalPrice(cartVO.getQuantity()*cartVO.getProductPrice());
+        }
+        return cartVOS;
     }
 }

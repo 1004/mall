@@ -1,8 +1,11 @@
 package com.xky.mall.model.dao;
 
 import com.xky.mall.model.pojo.Cart;
+import com.xky.mall.model.vo.CartVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface CartMapper {
@@ -19,4 +22,6 @@ public interface CartMapper {
     int updateByPrimaryKey(Cart record);
 
     Cart selectByUserIdAndProId(@Param("productId") Integer productId, @Param("userId") Integer userId);
+
+    List<CartVO> selectList(@Param("userId") Integer userId);
 }

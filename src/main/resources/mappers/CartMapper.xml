@@ -121,4 +121,20 @@
     where product_id=#{productId}
     and user_id = #{userId}
   </select>
+  <select id="selectList" parameterType="java.lang.Integer" resultType="com.xky.mall.model.vo.CartVO">
+    select
+    c.id as id,
+    p.id as productId,
+    c.user_id as userId,
+    c.quantity as quantity,
+    c.selected as selected,
+    c.create_time as createTime,
+    c.update_time as updateTime,
+    p.name as productName,
+    p.image as productImage,
+    p.price as productPrice
+    from imooc_mall_cart c
+    left join imooc_mall_product p on c.product_id = p.id
+    where c.user_id=#{userId}
+  </select>
 </mapper>
