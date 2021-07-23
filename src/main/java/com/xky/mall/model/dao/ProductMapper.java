@@ -1,6 +1,7 @@
 package com.xky.mall.model.dao;
 
 import com.xky.mall.model.pojo.Product;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -18,4 +19,6 @@ public interface ProductMapper {
     int updateByPrimaryKey(Product record);
 
     Product selectByName(String name);
+
+    void batchUpdateSellStatus(@Param("ids") Integer[] ids, @Param("sellStatus") Integer sellStatus);
 }

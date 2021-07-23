@@ -10,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @author xiekongying
@@ -59,5 +60,10 @@ public class ProductServiceImpl implements ProductService {
         if (count == 0){
             throw new MallException(MallExceptionEnum.PRODUCT_DELETE_F);
         }
+    }
+
+    @Override
+    public void batchUpdateSellStatus(Integer[] ids, Integer sellStatus){
+        productMapper.batchUpdateSellStatus(ids,sellStatus);
     }
 }

@@ -116,4 +116,11 @@ public class AdminProductController {
         return CommonResponse.success();
     }
 
+    @ApiOperation("批量上下架商品")
+    @GetMapping("/batchUpdateSellStatus")
+    public CommonResponse batchUpdateSellStatus(@RequestParam Integer[] ids, @RequestParam Integer sellStatus) {
+        productService.batchUpdateSellStatus(ids,sellStatus);
+        return CommonResponse.success();
+    }
+
 }
