@@ -37,15 +37,27 @@ public class CartController {
 
     @ApiOperation("更新购物车")
     @PostMapping("/update")
-    public CommonResponse update(@RequestParam("productId") Integer productId,@RequestParam("count") Integer count){
+    public CommonResponse update(@RequestParam("productId") Integer productId, @RequestParam("count") Integer count) {
         List<CartVO> update = cartService.update(productId, count);
-        return  CommonResponse.success(update);
+        return CommonResponse.success(update);
     }
 
     @ApiOperation("删除购物车商品")
     @PostMapping("/delete")
-    public CommonResponse delete(@RequestParam("productId")Integer productId){
+    public CommonResponse delete(@RequestParam("productId") Integer productId) {
         List<CartVO> delete = cartService.delete(productId);
         return CommonResponse.success(delete);
+    }
+
+    @PostMapping("/check")
+    public CommonResponse checkOrNot(@RequestParam("productId") Integer productId, @RequestParam("checked") Integer checked) {
+        List<CartVO> check = cartService.check(productId, checked);
+        return CommonResponse.success(check);
+    }
+
+    @PostMapping("/checkall")
+    public CommonResponse checkAll(@RequestParam("checked") Integer checked) {
+        List<CartVO> cartVOS = cartService.checkAll(checked);
+        return CommonResponse.success(cartVOS);
     }
 }

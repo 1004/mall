@@ -132,4 +132,29 @@ public class CartServiceImpl implements CartService {
         return list();
     }
 
+    @Override
+    public List<CartVO> check(Integer productId, Integer checked){
+        if (checked>0){
+            checked = 1;
+        }
+        User user = UserFilter.currentUser;
+        //是否已经在购物车了
+        Cart cart = cartMapper.selectByUserIdAndProId(productId, user.getId());
+        if (cart == null) {
+            throw new MallException(MallExceptionEnum.CART_DELETE_F);
+        }
+        cartMapper.updataCheck(productId,user.getId(),checked);
+        return list();
+    }
+
+    @Override
+    public List<CartVO> checkAll(Integer checked){
+        if (checked>0){
+            checked = 1;
+        }
+        User user = UserFilter.currentUser;
+        cartMapper.updataCheck(null,user.getId(),checked);
+        return list();
+    }
+
 }

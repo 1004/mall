@@ -24,4 +24,6 @@ public interface CartMapper {
     Cart selectByUserIdAndProId(@Param("productId") Integer productId, @Param("userId") Integer userId);
 
     List<CartVO> selectList(@Param("userId") Integer userId);
+
+    void updataCheck(@Param("productId") Integer productId, @Param("userId") Integer userId,@Param("checked") Integer checked);
 }

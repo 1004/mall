@@ -12,4 +12,8 @@ public interface CartService {
     List<CartVO> update(Integer productId, Integer count);
 
     List<CartVO> delete(Integer productId);
+
+    List<CartVO> check(Integer productId, Integer checked);
+
+    List<CartVO> checkAll(Integer checked);
 }
