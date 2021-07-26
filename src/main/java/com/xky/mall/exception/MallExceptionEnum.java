@@ -33,6 +33,8 @@ public enum MallExceptionEnum {
     ORDER_NO_SELECT(1013, "未选择商品,无法下单"),
     ORDER_NO_ENOUGH(1014, "库存不够,无法下单"),
     ORDER_NOT_STATE(1015, "订单状态异常"),
+    ORDER_NO_EXIST(1016, "订单不存在"),
+    ORDER_NO_PER(1017, "无权限操作该订单"),
 
 
     SYSTEM_ERROR(10000, "系统异常"),

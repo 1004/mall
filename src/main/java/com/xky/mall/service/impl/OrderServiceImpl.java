@@ -13,10 +13,14 @@ import com.xky.mall.model.pojo.OrderItem;
 import com.xky.mall.model.pojo.Product;
 import com.xky.mall.model.request.CreateOrderReq;
 import com.xky.mall.model.vo.CartVO;
+import com.xky.mall.model.vo.OrderItemVO;
+import com.xky.mall.model.vo.OrderVO;
 import com.xky.mall.service.OrderService;
 import com.xky.mall.utils.OrderCodeFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -48,6 +52,7 @@ public class OrderServiceImpl implements OrderService {
      * @param orderReq 订单号
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public String create(CreateOrderReq orderReq) {
         //①拿到用户id
@@ -173,5 +178,41 @@ public class OrderServiceImpl implements OrderService {
             orderItemMapper.insertSelective(orderItem);
         }
         return order.getOrderNo();
+    }
+
+    /**
+     * 订单详情
+     *
+     * @param orderNo
+     * @return
+     */
+    @Override
+    public OrderVO detail(String orderNo) {
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if (order == null) {
+            throw new MallException(MallExceptionEnum.ORDER_NO_EXIST);
+        }
+        //判断是否为当前用户的
+        if (!order.getUserId().equals(UserFilter.currentUser.getId())) {
+            throw new MallException(MallExceptionEnum.ORDER_NO_PER);
+        }
+        OrderVO orderVO = generateOrderVO(order);
+        return orderVO;
+    }
+
+    private OrderVO generateOrderVO(Order order) {
+        OrderVO orderVO = new OrderVO();
+        BeanUtils.copyProperties(order, orderVO);
+        orderVO.setOrderStatusName(Constants.OrderStatusEnum.codeOfValue(order.getOrderStatus()).getValue());
+        List<OrderItem> orderItems = orderItemMapper.selectByOrderNo(order.getOrderNo());
+        List<OrderItemVO> orderItemVOS = new ArrayList<>();
+        for (int i = 0; i < orderItems.size(); i++) {
+            OrderItem orderItem = orderItems.get(i);
+            OrderItemVO orderItemVO = new OrderItemVO();
+            BeanUtils.copyProperties(orderItem, orderItemVO);
+            orderItemVOS.add(orderItemVO);
+        }
+        orderVO.setOrderItemVOList(orderItemVOS);
+        return orderVO;
     }
 }
