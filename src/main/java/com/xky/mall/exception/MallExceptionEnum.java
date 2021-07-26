@@ -30,6 +30,10 @@ public enum MallExceptionEnum {
     CART_PRO_NO_ENOUGH(1011, "商品库存不足"),
     CART_DELETE_F(1012, "商品删除失败"),
 
+    ORDER_NO_SELECT(1013, "未选择商品,无法下单"),
+    ORDER_NO_ENOUGH(1014, "库存不够,无法下单"),
+    ORDER_NOT_STATE(1015, "订单状态异常"),
+
 
     SYSTEM_ERROR(10000, "系统异常"),
     SYSTEM_UPLOAD_F(10002, "图片上传失败"),

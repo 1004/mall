@@ -1,7 +1,9 @@
 package com.xky.mall.model.dao;
 
 import com.xky.mall.model.pojo.Order;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface OrderMapper {
     int deleteByPrimaryKey(Integer id);
 

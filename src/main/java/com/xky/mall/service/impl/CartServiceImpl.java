@@ -135,7 +135,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public List<CartVO> check(Integer productId, Integer checked){
         if (checked>0){
-            checked = 1;
+            checked = Constants.Cart.CHECKED;
         }
         User user = UserFilter.currentUser;
         //是否已经在购物车了
@@ -150,7 +150,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public List<CartVO> checkAll(Integer checked){
         if (checked>0){
-            checked = 1;
+            checked = Constants.Cart.CHECKED;
         }
         User user = UserFilter.currentUser;
         cartMapper.updataCheck(null,user.getId(),checked);
