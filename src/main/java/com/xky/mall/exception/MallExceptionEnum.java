@@ -28,6 +28,7 @@ public enum MallExceptionEnum {
     CART_PRO_NOT_EXIST(1019, "商品不存在"),
     CART_PRO_HAS_SALE(1010, "商品已下架"),
     CART_PRO_NO_ENOUGH(1011, "商品库存不足"),
+    CART_DELETE_F(1012, "商品删除失败"),
 
 
     SYSTEM_ERROR(10000, "系统异常"),

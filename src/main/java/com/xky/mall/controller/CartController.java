@@ -4,6 +4,7 @@ import com.xky.mall.common.CommonResponse;
 import com.xky.mall.model.vo.CartVO;
 import com.xky.mall.service.CartService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,5 +33,19 @@ public class CartController {
     public CommonResponse list() {
         List<CartVO> list = cartService.list();
         return CommonResponse.success(list);
+    }
+
+    @ApiOperation("更新购物车")
+    @PostMapping("/update")
+    public CommonResponse update(@RequestParam("productId") Integer productId,@RequestParam("count") Integer count){
+        List<CartVO> update = cartService.update(productId, count);
+        return  CommonResponse.success(update);
+    }
+
+    @ApiOperation("删除购物车商品")
+    @PostMapping("/delete")
+    public CommonResponse delete(@RequestParam("productId")Integer productId){
+        List<CartVO> delete = cartService.delete(productId);
+        return CommonResponse.success(delete);
     }
 }

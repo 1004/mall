@@ -86,10 +86,50 @@ public class CartServiceImpl implements CartService {
     @Override
     public List<CartVO> list() {
         List<CartVO> cartVOS = cartMapper.selectList(UserFilter.currentUser.getId());
-        for (int i=0 ;i<cartVOS.size() ;i++){
+        for (int i = 0; i < cartVOS.size(); i++) {
             CartVO cartVO = cartVOS.get(i);
-            cartVO.setTotalPrice(cartVO.getQuantity()*cartVO.getProductPrice());
+            cartVO.setTotalPrice(cartVO.getQuantity() * cartVO.getProductPrice());
         }
         return cartVOS;
     }
+
+    @Override
+    public List<CartVO> update(Integer productId, Integer count) {
+        //校验
+        validProduct(productId, count);
+        User user = UserFilter.currentUser;
+        //是否已经在购物车了
+        Cart cart = cartMapper.selectByUserIdAndProId(productId, user.getId());
+        if (cart == null) {
+            //不在购物车， 抛出异常
+            throw new MallException(MallExceptionEnum.CART_PRO_NOT_EXIST);
+        } else {
+            //在购物车，只需要数量+1
+            Cart updateCart = new Cart();
+            updateCart.setId(cart.getId());
+            updateCart.setQuantity(count);
+            updateCart.setSelected(Constants.Cart.CHECKED);
+            updateCart.setProductId(productId);
+            updateCart.setUserId(user.getId());
+            cartMapper.updateByPrimaryKeySelective(updateCart);
+        }
+        return list();
+    }
+
+
+    @Override
+    public List<CartVO> delete(Integer productId) {
+        User user = UserFilter.currentUser;
+        //是否已经在购物车了
+        Cart cart = cartMapper.selectByUserIdAndProId(productId, user.getId());
+        if (cart == null) {
+            throw new MallException(MallExceptionEnum.CART_DELETE_F);
+        }
+        int count = cartMapper.deleteByPrimaryKey(cart.getId());
+        if (count == 0) {
+            throw new MallException(MallExceptionEnum.CART_DELETE_F);
+        }
+        return list();
+    }
+
 }
