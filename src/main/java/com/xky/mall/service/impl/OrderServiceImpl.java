@@ -1,5 +1,7 @@
 package com.xky.mall.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.xky.mall.common.Constants;
 import com.xky.mall.exception.MallException;
 import com.xky.mall.exception.MallExceptionEnum;
@@ -17,6 +19,7 @@ import com.xky.mall.model.vo.OrderItemVO;
 import com.xky.mall.model.vo.OrderVO;
 import com.xky.mall.service.OrderService;
 import com.xky.mall.utils.OrderCodeFactory;
+import io.swagger.models.auth.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -214,5 +217,30 @@ public class OrderServiceImpl implements OrderService {
         }
         orderVO.setOrderItemVOList(orderItemVOS);
         return orderVO;
+    }
+
+
+    /**
+     * 普通用户的订单列表
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public PageInfo listForCustomer(Integer page, Integer pageSize){
+        PageHelper.startPage(page,pageSize);
+        List<Order> orders = orderMapper.selectByCustomer(UserFilter.currentUser.getId());
+        List<OrderVO> orderVOS = ordersToOrderVOs(orders);
+        return PageInfo.of(orderVOS);
+    }
+
+    private List<OrderVO> ordersToOrderVOs(List<Order> orders) {
+        List<OrderVO> orderVOS = new ArrayList<>();
+        for (int i= 0 ;i<orders.size() ;i++){
+            Order order = orders.get(i);
+            OrderVO orderVO = generateOrderVO(order);
+            orderVOS.add(orderVO);
+        }
+        return orderVOS;
     }
 }
