@@ -29,13 +29,20 @@ public class OrderController {
 
     @ApiOperation("订单详情")
     @GetMapping("/detail")
-    public CommonResponse detail(@RequestParam String orderNo){
+    public CommonResponse detail(@RequestParam String orderNo) {
         return CommonResponse.success(orderService.detail(orderNo));
     }
 
     @ApiOperation("前台订单列表")
     @GetMapping("/list")
-    public CommonResponse listForCustomer(Integer page,Integer pageSize){
-        return CommonResponse.success(orderService.listForCustomer(page,pageSize));
+    public CommonResponse listForCustomer(Integer page, Integer pageSize) {
+        return CommonResponse.success(orderService.listForCustomer(page, pageSize));
+    }
+
+    @ApiOperation("取消订单")
+    @GetMapping("/cancel")
+    public CommonResponse cancel(String orderNo) {
+        orderService.cancelOrder(orderNo);
+        return CommonResponse.success();
     }
 }

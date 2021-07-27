@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -242,5 +243,25 @@ public class OrderServiceImpl implements OrderService {
             orderVOS.add(orderVO);
         }
         return orderVOS;
+    }
+
+    @Override
+    public void cancelOrder(String orderNo){
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if (order == null){
+            throw new MallException(MallExceptionEnum.ORDER_NO_EXIST);
+        }
+        //判断是否为当前用户的
+        if (!order.getUserId().equals(UserFilter.currentUser.getId())) {
+            throw new MallException(MallExceptionEnum.ORDER_NO_PER);
+        }
+        //状态要是未付款
+        if (!order.getOrderStatus().equals(Constants.OrderStatusEnum.NOT_PAY.getCode())){
+            throw new MallException(MallExceptionEnum.ORDER_NO_CANCEL);
+        }
+
+        order.setOrderStatus(Constants.OrderStatusEnum.CANCELED.getCode());
+        order.setEndTime(new Date());
+        orderMapper.updateByPrimaryKeySelective(order);
     }
 }
