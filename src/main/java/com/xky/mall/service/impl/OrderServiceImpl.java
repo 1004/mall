@@ -19,6 +19,7 @@ import com.xky.mall.model.vo.CartVO;
 import com.xky.mall.model.vo.OrderItemVO;
 import com.xky.mall.model.vo.OrderVO;
 import com.xky.mall.service.OrderService;
+import com.xky.mall.service.UserService;
 import com.xky.mall.utils.OrderCodeFactory;
 import com.xky.mall.utils.QRCodeGenerator;
 import io.swagger.models.auth.In;
@@ -56,6 +57,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderItemMapper orderItemMapper;
+
+    @Autowired
+    private UserService userService;
 
     @Value("${file.upload.ip}")
     private String ip;// 支付ip地址
@@ -282,7 +286,7 @@ public class OrderServiceImpl implements OrderService {
         HttpServletRequest request = attributes.getRequest();
         int port = request.getLocalPort(); //端口号
         String address = ip+":"+port;
-        String payURl = "http://"+address+"/pay?orderNo="+orderNo;
+        String payURl = "http://"+address+"/order/pay?orderNo="+orderNo;
         try {
             QRCodeGenerator.generateQrCodeImage(payURl,350,350,Constants.FILE_UPLOAD_DIR+orderNo+".png");
         } catch (WriterException e) {
@@ -302,11 +306,80 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-    public PageInfo listForAdmin(Integer page,Integer pageSize){
+    public PageInfo listForAdmin(Integer page, Integer pageSize){
         PageHelper.startPage(page,pageSize);
         List<Order> orders = orderMapper.selectByAdmin();
         List<OrderVO> orderVOS = ordersToOrderVOs(orders);
         return PageInfo.of(orderVOS);
+    }
+
+
+    @Override
+    public void pay(String orderNo){
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if (order == null){
+            throw new MallException(MallExceptionEnum.ORDER_NO_EXIST);
+        }
+        //判断是否为当前用户的
+        if (!order.getUserId().equals(UserFilter.currentUser.getId())) {
+            throw new MallException(MallExceptionEnum.ORDER_NO_PER);
+        }
+
+        //状态要是未付款
+        if (!order.getOrderStatus().equals(Constants.OrderStatusEnum.NOT_PAY.getCode())){
+            throw new MallException(MallExceptionEnum.ORDER_NO_PER);
+        }
+
+        order.setOrderStatus(Constants.OrderStatusEnum.PAID.getCode());
+        order.setPayTime(new Date());
+        orderMapper.updateByPrimaryKeySelective(order);
+    }
+
+    /**
+     * 管理员进行发货
+     * @param orderNo
+     */
+    @Override
+    public void deliver(String orderNo){
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if (order == null){
+            throw new MallException(MallExceptionEnum.ORDER_NO_EXIST);
+        }
+        //状态要是已付款
+        if (!order.getOrderStatus().equals(Constants.OrderStatusEnum.PAID.getCode())){
+            throw new MallException(MallExceptionEnum.ORDER_NO_PER);
+        }
+
+        order.setDeliveryTime(new Date());
+        order.setOrderStatus(Constants.OrderStatusEnum.SEND.getCode());
+        orderMapper.updateByPrimaryKeySelective(order);
+    }
+
+    /**
+     * 对订单做完结
+     * 管理员可以对所有订单完结
+     * 用户也可以对自己的订单完结
+     * @param orderNo
+     */
+    @Override
+    public void finish(String orderNo){
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if (order == null){
+            throw new MallException(MallExceptionEnum.ORDER_NO_EXIST);
+        }
+        //状态要是已发货
+        if (!order.getOrderStatus().equals(Constants.OrderStatusEnum.SEND.getCode())){
+            throw new MallException(MallExceptionEnum.ORDER_NO_PER);
+        }
+
+        if (!userService.checkAdminRole(UserFilter.currentUser) && !order.getUserId().equals(UserFilter.currentUser.getId())){
+            //不是管理员，当前订单的用户也不是登录用户
+            throw new MallException(MallExceptionEnum.ORDER_NO_PER);
+        }
+
+        order.setOrderStatus(Constants.OrderStatusEnum.FINISHED.getCode());
+        order.setEndTime(new Date());
+        orderMapper.updateByPrimaryKeySelective(order);
     }
 
 

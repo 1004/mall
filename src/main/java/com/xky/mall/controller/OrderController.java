@@ -48,7 +48,21 @@ public class OrderController {
 
     @ApiOperation("生成订单支付二维码")
     @PostMapping("/qrcode")
-    public CommonResponse qrcode(@RequestParam String orderNo){
+    public CommonResponse qrcode(@RequestParam String orderNo) {
         return CommonResponse.success(orderService.qrcode(orderNo));
+    }
+
+    @ApiOperation("支付")
+    @GetMapping("/pay")
+    public CommonResponse pay(@RequestParam("orderNo") String orderNo) {
+        orderService.pay(orderNo);
+        return CommonResponse.success();
+    }
+
+    @ApiOperation("完结订单")
+    @GetMapping("/finish")
+    public CommonResponse finish(@RequestParam("orderNo") String orderNo) {
+        orderService.finish(orderNo);
+        return CommonResponse.success();
     }
 }
