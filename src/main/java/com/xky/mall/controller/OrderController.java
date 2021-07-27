@@ -45,4 +45,10 @@ public class OrderController {
         orderService.cancelOrder(orderNo);
         return CommonResponse.success();
     }
+
+    @ApiOperation("生成订单支付二维码")
+    @PostMapping("/qrcode")
+    public CommonResponse qrcode(@RequestParam String orderNo){
+        return CommonResponse.success(orderService.qrcode(orderNo));
+    }
 }

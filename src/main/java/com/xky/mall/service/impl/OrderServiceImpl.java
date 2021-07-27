@@ -2,6 +2,7 @@ package com.xky.mall.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.zxing.WriterException;
 import com.xky.mall.common.Constants;
 import com.xky.mall.exception.MallException;
 import com.xky.mall.exception.MallExceptionEnum;
@@ -19,13 +20,19 @@ import com.xky.mall.model.vo.OrderItemVO;
 import com.xky.mall.model.vo.OrderVO;
 import com.xky.mall.service.OrderService;
 import com.xky.mall.utils.OrderCodeFactory;
+import com.xky.mall.utils.QRCodeGenerator;
 import io.swagger.models.auth.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,6 +57,8 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderItemMapper orderItemMapper;
 
+    @Value("${file.upload.ip}")
+    private String ip;// 支付ip地址
     /**
      * 创建订单
      *
@@ -263,5 +272,26 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderStatus(Constants.OrderStatusEnum.CANCELED.getCode());
         order.setEndTime(new Date());
         orderMapper.updateByPrimaryKeySelective(order);
+    }
+
+
+    @Override
+    public String qrcode(String orderNo){
+        //① 获取请求参数
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+        int port = request.getLocalPort(); //端口号
+        String address = ip+":"+port;
+        String payURl = "http://"+address+"/pay?orderNo="+orderNo;
+        try {
+            QRCodeGenerator.generateQrCodeImage(payURl,350,350,Constants.FILE_UPLOAD_DIR+orderNo+".png");
+        } catch (WriterException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //图片url和生成的图片本地已经配置好映射关系
+        String pngAddress = "http://"+address+"/image/"+orderNo+".png";
+        return pngAddress;
     }
 }
