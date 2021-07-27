@@ -294,4 +294,20 @@ public class OrderServiceImpl implements OrderService {
         String pngAddress = "http://"+address+"/image/"+orderNo+".png";
         return pngAddress;
     }
+
+    /**
+     * 管理者查询订单
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public PageInfo listForAdmin(Integer page,Integer pageSize){
+        PageHelper.startPage(page,pageSize);
+        List<Order> orders = orderMapper.selectByAdmin();
+        List<OrderVO> orderVOS = ordersToOrderVOs(orders);
+        return PageInfo.of(orderVOS);
+    }
+
+
 }
